@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'models/db-data-model.dart';
 
 Future<Stream<DbData>> getData() async {
-  final String url = 'https://api.punkapi.com/v2/beers';
+  final String url = 'https://localhost:42842/api/values';
 
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
