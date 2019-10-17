@@ -21,17 +21,17 @@ Future<DbData> fetchPost() async {
 class DbData {
   final int id;
   final String title;
-  final Float length;
+  final double length;
   final bool isTrue;
 
   DbData({this.id, this.title, this.length, this.isTrue});
 
-  factory DbData.fromJson(Map<String, dynamic> json) {
+  factory DbData.fromJson(List<dynamic> json) {
     return DbData(
-      id: json['id'],
-      title: json['title'],
-      length: json['length'],
-      isTrue: json['is-true'],
+      id: json[0]['id'],
+      title: json[0]['title'],
+      length: json[0]['length'],
+      isTrue: json[0]['is-true'],
     );
   }
 }
