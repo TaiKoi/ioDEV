@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/basic.dart';
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 
 Future<DbData> fetchPost() async {
@@ -59,7 +61,14 @@ class MyApp extends StatelessWidget {
             future: dbData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data.title);
+                return  Column(
+                  children: [
+                    RaisedButton(child: Text(snapshot.data.title)),
+                    Text(snapshot.data.length.toString()),
+                    Text(snapshot.data.id.toString()),
+                    Text(snapshot.data.isTrue.toString()),
+                  ],
+                );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
