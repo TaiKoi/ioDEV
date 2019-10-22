@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:async';
 import 'dart:convert';
 
@@ -16,24 +15,22 @@ Future<DbData> fetchPost() async {
     return DbData.fromJson(json.decode(response.body));
   } else {
     // If that call was not successful, throw an error.
-    throw Exception('Failed to load post');
+    throw Exception('Failed to load data');
   }
 }
 
 class DbData {
-  final int id;
   final String title;
   final double length;
   final bool isTrue;
 
-  DbData({this.id, this.title, this.length, this.isTrue});
+  DbData({this.title, this.length, this.isTrue});
 
   factory DbData.fromJson(List<dynamic> json) {
     return DbData(
-      id: json[0]['id'],
-      title: json[0]['title'],
-      length: json[0]['length'],
-      isTrue: json[0]['is-true'],
+      title: json[2]['title'],
+      length: json[2]['length'],
+      isTrue: json[2]['isTrue'],
     );
   }
 }
@@ -54,25 +51,44 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Fetch Data Example'),
+          title: Text('Get & Post Data Via Flutter'),
         ),
         body: Center(
           child: FutureBuilder<DbData>(
             future: dbData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return  Column(
+                return Column(
                   children: [
-                    RaisedButton(child: Text(snapshot.data.title)),
-                    Text(snapshot.data.length.toString()),
-                    Text(snapshot.data.id.toString()),
+                    RaisedButton(
+                      child: Text(snapshot.data.title),
+                      onPressed: () {},
+                    ),
+                    Container(
+                        color: Colors.pink,
+                        child: Text(snapshot.data.length.toString())),
                     Text(snapshot.data.isTrue.toString()),
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.person),
+                        hintText: 'Enter Title',
+                        labelText: 'Title',
+                      ),
+                      onSaved: (String value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String value) {
+                        return value.contains('@')
+                            ? 'Do not use the @ char.'
+                            : null;
+                      },
+                    )
                   ],
                 );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
-
               // By default, show a loading spinner.
               return CircularProgressIndicator();
             },
