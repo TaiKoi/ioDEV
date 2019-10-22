@@ -45,9 +45,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Fetch Data Example',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -60,14 +61,7 @@ class MyApp extends StatelessWidget {
               if (snapshot.hasData) {
                 return Column(
                   children: [
-                    RaisedButton(
-                      child: Text(snapshot.data.title),
-                      onPressed: () {},
-                    ),
-                    Container(
-                        color: Colors.pink,
-                        child: Text(snapshot.data.length.toString())),
-                    Text(snapshot.data.isTrue.toString()),
+                    Padding(padding: EdgeInsets.all(10)),
                     TextFormField(
                       decoration: const InputDecoration(
                         icon: Icon(Icons.person),
@@ -83,7 +77,24 @@ class MyApp extends StatelessWidget {
                             ? 'Do not use the @ char.'
                             : null;
                       },
-                    )
+                    ),
+                    Padding(padding: EdgeInsets.all(20)),
+                    RaisedButton(
+                      color: Colors.lightGreen,
+                      child: Text(snapshot.data.title),
+                      onPressed: () {},
+                    ),
+                    Container(
+                        padding: EdgeInsets.fromLTRB(42, 10, 42, 10),
+                        color: Colors.pink,
+                        child: Text(snapshot.data.length.toString())),
+                    Container(
+                        padding: EdgeInsets.fromLTRB(43, 10, 43, 10),
+                        color: Colors.deepPurple,
+                        child: Text(
+                          snapshot.data.isTrue.toString(),
+                          style: TextStyle(color: Colors.white),
+                        )),
                   ],
                 );
               } else if (snapshot.hasError) {
