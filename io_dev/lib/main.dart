@@ -39,6 +39,8 @@ void main() => runApp(MyApp(dbData: fetchPost()));
 
 class MyApp extends StatelessWidget {
   final Future<DbData> dbData;
+  final formKey = GlobalKey<FormState>();
+  String _title, _length, _isTrue;
 
   MyApp({Key key, this.dbData}) : super(key: key);
 
@@ -64,21 +66,56 @@ class MyApp extends StatelessWidget {
                     Padding(padding: EdgeInsets.all(10)),
                     TextFormField(
                       decoration: const InputDecoration(
-                        icon: Icon(Icons.person),
+                        icon: Icon(Icons.arrow_forward),
                         hintText: 'Enter Title',
                         labelText: 'Title',
                       ),
-                      onSaved: (String value) {
-                        // This optional block of code can be used to run
-                        // code when the user saves the form.
+                      onSaved: (input) {
+                        _title = input;
                       },
-                      validator: (String value) {
-                        return value.contains('@')
-                            ? 'Do not use the @ char.'
+                      validator: (input) {
+                        return input.contains(
+                                '') //can only contain letter characters!
+                            ? 'Only enter letters!'
                             : null;
                       },
                     ),
-                    Padding(padding: EdgeInsets.all(20)),
+                    TextFormField(
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.arrow_forward),
+                          hintText: 'Enter Duration',
+                          labelText: 'Length',
+                        ),
+                        onSaved: (input) {
+                          _length = input;
+                        },
+                        validator: (input) {
+                          return input.contains(
+                                  '') //can only contain numerical values!
+                              ? 'Only enter numbers!'
+                              : null;
+                        }),
+                    TextFormField(
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.arrow_forward),
+                          hintText: 'Enter true or false',
+                          labelText: 'true or false?',
+                        ),
+                        onSaved: (input) {
+                          _isTrue = input;
+                        },
+                        validator: (input) {
+                          return input.contains(
+                                  '') //can only contain true or false!
+                              ? 'Only enter True or False'
+                              : null;
+                        }),
+                    Row(children: <Widget>[
+                      Padding(padding: EdgeInsets.fromLTRB(240, 0, 0, 0)),
+                      RaisedButton(
+                          onPressed: _submit, child: Text('Save to Database'))
+                    ]),
+                    Padding(padding: EdgeInsets.all(50)),
                     RaisedButton(
                       color: Colors.lightGreen,
                       child: Text(snapshot.data.title),
@@ -107,5 +144,14 @@ class MyApp extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _submit() {
+    if (formKey.currentState.validate()) {
+      formKey.currentState.save();
+      print(_title);
+      print(_length);
+      print(_isTrue);
+    }
   }
 }
