@@ -6,7 +6,7 @@ import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 
-Future<DbData> fetchPost() async {
+Future<DbData> fetchData() async {
   final response =
       await http.get('https://tktestapi.azurewebsites.net/api/values');
 
@@ -15,7 +15,7 @@ Future<DbData> fetchPost() async {
     return DbData.fromJson(json.decode(response.body));
   } else {
     // If that call was not successful, throw an error.
-    throw Exception('Failed to load data');
+    throw Exception('Failed to FETCH data');
   }
 }
 
@@ -35,7 +35,23 @@ class DbData {
   }
 }
 
-void main() => runApp(MyApp(dbData: fetchPost()));
+Future<void> insertData(DbData newRow) async {
+  // Get a reference to the database.
+  //final DbData db = await database;
+  String url = 'https://localhost:44368/api/values';
+  Map<String, String> headers = {"Content-type": "application/json"};
+  final postIt = await http.post(url, headers: headers, body: newRow);
+
+  if (postIt.statusCode == 200) {
+    // If the call to the server was successful, parse the JSON.
+    return 'Data inserted into DB';
+  } else {
+    // If that call was not successful, throw an error.
+    throw Exception('Failed to POST data');
+  }
+}
+
+void main() => runApp(MyApp(dbData: fetchData()));
 
 class MyApp extends StatelessWidget {
   final Future<DbData> dbData;
@@ -70,11 +86,11 @@ class MyApp extends StatelessWidget {
                         hintText: 'Enter Title',
                         labelText: 'Title',
                       ),
-                      onSaved: (input) {
-                        _title = input;
+                      onSaved: (String titleInput) {
+                        _title = titleInput;
                       },
-                      validator: (input) {
-                        return input.contains(
+                      validator: (titleInput) {
+                        return titleInput.contains(
                                 '') //can only contain letter characters!
                             ? 'Only enter letters!'
                             : null;
@@ -86,11 +102,11 @@ class MyApp extends StatelessWidget {
                           hintText: 'Enter Duration',
                           labelText: 'Length',
                         ),
-                        onSaved: (input) {
-                          _length = input;
+                        onSaved: (String lengthInput) {
+                          _length = lengthInput;
                         },
-                        validator: (input) {
-                          return input.contains(
+                        validator: (lengthInput) {
+                          return lengthInput.contains(
                                   '') //can only contain numerical values!
                               ? 'Only enter numbers!'
                               : null;
@@ -101,11 +117,11 @@ class MyApp extends StatelessWidget {
                           hintText: 'Enter true or false',
                           labelText: 'true or false?',
                         ),
-                        onSaved: (input) {
-                          _isTrue = input;
+                        onSaved: (isTrueInput) {
+                          _isTrue = isTrueInput;
                         },
-                        validator: (input) {
-                          return input.contains(
+                        validator: (isTrueInput) {
+                          return isTrueInput.contains(
                                   '') //can only contain true or false!
                               ? 'Only enter True or False'
                               : null;
@@ -146,12 +162,15 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  void _submit() {
-    if (formKey.currentState.validate()) {
-      formKey.currentState.save();
-      print(_title);
-      print(_length);
-      print(_isTrue);
-    }
+  Future<void> _submit() async {
+    //if (formKey.currentState.validate()) {
+    formKey.currentState.save();
+    print(_title);
+    print(_length);
+    print(_isTrue);
+    DbData newRow = new DbData(
+        title: _title, length: _length as double, isTrue: _isTrue as bool);
+    await insertData(newRow);
+    // }
   }
 }
