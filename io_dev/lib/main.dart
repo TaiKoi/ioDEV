@@ -129,7 +129,10 @@ class MyApp extends StatelessWidget {
                     Row(children: <Widget>[
                       Padding(padding: EdgeInsets.fromLTRB(240, 0, 0, 0)),
                       RaisedButton(
-                          onPressed: _submit, child: Text('Save to Database'))
+                          onPressed: () async {
+                            await _submit();
+                          },
+                          child: Text('Save to Database'))
                     ]),
                     Padding(padding: EdgeInsets.all(50)),
                     RaisedButton(
