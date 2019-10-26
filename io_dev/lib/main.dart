@@ -38,7 +38,7 @@ class DbData {
 Future<void> insertData(DbData newRow) async {
   // Get a reference to the database.
   //final DbData db = await database;
-  String url = 'https://localhost:44368/api/values';
+  String url = 'https://tktestapi.azurewebsites.net/api/values';
   Map<String, String> headers = {"Content-type": "application/json"};
   final postIt = await http.post(url, headers: headers, body: newRow);
 
