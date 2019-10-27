@@ -39,8 +39,9 @@ Future<void> insertData(DbData newRow) async {
   // Get a reference to the database.
   //final DbData db = await database;
   String url = 'https://tktestapi.azurewebsites.net/api/values';
-  Map<String, String> headers = {"Content-type": "application/json"};
-  final postIt = await http.post(url, headers: headers, body: newRow);
+  //Map<String, String> headers = {"Content-type": "application/json"};
+  final postIt =
+      await http.post(Uri.encodeFull(url), body: json.encode(newRow));
 
   if (postIt.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
@@ -56,7 +57,10 @@ void main() => runApp(MyApp(dbData: fetchData()));
 class MyApp extends StatelessWidget {
   final Future<DbData> dbData;
   final formKey = GlobalKey<FormState>();
-  String _title, _length, _isTrue;
+
+  TextEditingController stringController = new TextEditingController();
+  TextEditingController doubleController = new TextEditingController();
+  TextEditingController boolController = new TextEditingController();
 
   MyApp({Key key, this.dbData}) : super(key: key);
 
@@ -70,7 +74,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Get & Post Data Via Flutter'),
+          title: Text('Flutter --> .Net Core --> SQL DB'),
         ),
         body: Center(
           child: FutureBuilder<DbData>(
@@ -81,14 +85,15 @@ class MyApp extends StatelessWidget {
                   children: [
                     Padding(padding: EdgeInsets.all(10)),
                     TextFormField(
+                      controller: stringController,
                       decoration: const InputDecoration(
                         icon: Icon(Icons.arrow_forward),
                         hintText: 'Enter Title',
                         labelText: 'Title',
                       ),
-                      onSaved: (String titleInput) {
-                        _title = titleInput;
-                      },
+                      // onSaved: (String titleInput) {
+                      //   _title = titleInput;
+                      // },
                       validator: (titleInput) {
                         return titleInput.contains(
                                 '') //can only contain letter characters!
@@ -97,14 +102,15 @@ class MyApp extends StatelessWidget {
                       },
                     ),
                     TextFormField(
+                        controller: doubleController,
                         decoration: const InputDecoration(
                           icon: Icon(Icons.arrow_forward),
                           hintText: 'Enter Duration',
                           labelText: 'Length',
                         ),
-                        onSaved: (String lengthInput) {
-                          _length = lengthInput;
-                        },
+                        // onSaved: (String lengthInput) {
+                        //   _length = lengthInput;
+                        // },
                         validator: (lengthInput) {
                           return lengthInput.contains(
                                   '') //can only contain numerical values!
@@ -112,14 +118,15 @@ class MyApp extends StatelessWidget {
                               : null;
                         }),
                     TextFormField(
+                        controller: boolController,
                         decoration: const InputDecoration(
                           icon: Icon(Icons.arrow_forward),
                           hintText: 'Enter true or false',
                           labelText: 'true or false?',
                         ),
-                        onSaved: (isTrueInput) {
-                          _isTrue = isTrueInput;
-                        },
+                        // onSaved: (isTrueInput) {
+                        //   _isTrue = isTrueInput;
+                        // },
                         validator: (isTrueInput) {
                           return isTrueInput.contains(
                                   '') //can only contain true or false!
@@ -167,12 +174,14 @@ class MyApp extends StatelessWidget {
 
   Future<void> _submit() async {
     //if (formKey.currentState.validate()) {
-    formKey.currentState.save();
-    print(_title);
-    print(_length);
-    print(_isTrue);
+    //formKey.currentState.save();
+
+    // Ty: Put your console logs back in here
+
     DbData newRow = new DbData(
-        title: _title, length: _length as double, isTrue: _isTrue as bool);
+        title: stringController.text,
+        length: doubleController.text as double,
+        isTrue: boolController.text as bool);
     await insertData(newRow);
     // }
   }
