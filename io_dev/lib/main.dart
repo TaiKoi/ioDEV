@@ -19,10 +19,14 @@ Future<DbData> fetchData() async {
   }
 }
 
+TextEditingController stringController = new TextEditingController();
+TextEditingController doubleController = new TextEditingController();
+TextEditingController boolController = new TextEditingController();
+
 class DbData {
-  final String title;
-  final double length;
-  final bool isTrue;
+  String title;
+  double length;
+  bool isTrue;
 
   DbData({this.title, this.length, this.isTrue});
 
@@ -38,10 +42,17 @@ class DbData {
 Future<void> insertData(DbData newRow) async {
   // Get a reference to the database.
   //final DbData db = await database;
+
   String url = 'https://tktestapi.azurewebsites.net/api/values';
-  //Map<String, String> headers = {"Content-type": "application/json"};
+  Map<String, String> headers = {"Content-type": "application/json"};
+  Map<String, dynamic> body = {
+    'title': '' + newRow.title,
+    'length': newRow.length,
+    'isTrue': newRow.isTrue
+  };
+
   final postIt =
-      await http.post(Uri.encodeFull(url), body: json.encode(newRow));
+      await http.post(url, headers: headers, body: json.encode(body));
 
   if (postIt.statusCode == 200) {
     // If the call to the server was successful, parse the JSON.
@@ -57,10 +68,6 @@ void main() => runApp(MyApp(dbData: fetchData()));
 class MyApp extends StatelessWidget {
   final Future<DbData> dbData;
   final formKey = GlobalKey<FormState>();
-
-  TextEditingController stringController = new TextEditingController();
-  TextEditingController doubleController = new TextEditingController();
-  TextEditingController boolController = new TextEditingController();
 
   MyApp({Key key, this.dbData}) : super(key: key);
 
@@ -94,45 +101,42 @@ class MyApp extends StatelessWidget {
                       // onSaved: (String titleInput) {
                       //   _title = titleInput;
                       // },
-                      validator: (titleInput) {
-                        return titleInput.contains(
-                                '') //can only contain letter characters!
-                            ? 'Only enter letters!'
-                            : null;
-                      },
+                      // validator: (titleInput) {
+                      //   return titleInput.contains(
+                      //           '') //can only contain letter characters!
+                      //       ? 'Only enter letters!'
+                      //       : null;
+                      // },
                     ),
                     TextFormField(
-                        controller: doubleController,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.arrow_forward),
-                          hintText: 'Enter Duration',
-                          labelText: 'Length',
-                        ),
-                        // onSaved: (String lengthInput) {
-                        //   _length = lengthInput;
-                        // },
-                        validator: (lengthInput) {
-                          return lengthInput.contains(
-                                  '') //can only contain numerical values!
-                              ? 'Only enter numbers!'
-                              : null;
-                        }),
+                      controller: doubleController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.arrow_forward),
+                        hintText: 'Enter Duration',
+                        labelText: 'Length',
+                      ),
+                      // onSaved: (String lengthInput) {
+                      //   _length = lengthInput;
+                      // },
+                      // validator: (lengthInput) {
+                      //   return lengthInput.contains(
+                      //           '') //can only contain numerical values!
+                      //       ? 'Only enter numbers!'
+                      //       : null;
+                      // }
+                    ),
                     TextFormField(
-                        controller: boolController,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.arrow_forward),
-                          hintText: 'Enter true or false',
-                          labelText: 'true or false?',
-                        ),
-                        // onSaved: (isTrueInput) {
-                        //   _isTrue = isTrueInput;
-                        // },
-                        validator: (isTrueInput) {
-                          return isTrueInput.contains(
-                                  '') //can only contain true or false!
-                              ? 'Only enter True or False'
-                              : null;
-                        }),
+                      controller: boolController,
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.arrow_forward),
+                        hintText: 'Enter true or false',
+                        labelText: 'true or false?',
+                      ),
+                      // onSaved: (isTrueInput) {
+                      //   _isTrue = isTrueInput;
+                      // },
+                      //
+                    ),
                     Row(children: <Widget>[
                       Padding(padding: EdgeInsets.fromLTRB(240, 0, 0, 0)),
                       RaisedButton(
@@ -141,7 +145,7 @@ class MyApp extends StatelessWidget {
                           },
                           child: Text('Save to Database'))
                     ]),
-                    Padding(padding: EdgeInsets.all(50)),
+                    Padding(padding: EdgeInsets.all(10)),
                     RaisedButton(
                       color: Colors.lightGreen,
                       child: Text(snapshot.data.title),
@@ -176,12 +180,14 @@ class MyApp extends StatelessWidget {
     //if (formKey.currentState.validate()) {
     //formKey.currentState.save();
 
-    // Ty: Put your console logs back in here
+    print('stringController: ' + stringController.text);
+    print('doubleController: ' + doubleController.text);
+    print('boolController: ' + boolController.text);
 
     DbData newRow = new DbData(
         title: stringController.text,
-        length: doubleController.text as double,
-        isTrue: boolController.text as bool);
+        length: double.parse(doubleController.text),
+        isTrue: boolController.text.toLowerCase() == 'true');
     await insertData(newRow);
     // }
   }
