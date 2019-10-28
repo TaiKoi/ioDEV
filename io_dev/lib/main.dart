@@ -19,22 +19,18 @@ Future<DbData> fetchData() async {
   }
 }
 
-TextEditingController stringController = new TextEditingController();
-TextEditingController doubleController = new TextEditingController();
-TextEditingController boolController = new TextEditingController();
-
 class DbData {
-  String title;
-  double length;
-  bool isTrue;
+  final String title;
+  final double length;
+  final bool isTrue;
 
   DbData({this.title, this.length, this.isTrue});
 
   factory DbData.fromJson(List<dynamic> json) {
     return DbData(
-      title: json[2]['title'],
-      length: json[2]['length'],
-      isTrue: json[2]['isTrue'],
+      title: json[7]['title'],
+      length: json[7]['length'],
+      isTrue: json[7]['isTrue'],
     );
   }
 }
@@ -68,6 +64,10 @@ void main() => runApp(MyApp(dbData: fetchData()));
 class MyApp extends StatelessWidget {
   final Future<DbData> dbData;
   final formKey = GlobalKey<FormState>();
+
+  TextEditingController stringController = new TextEditingController();
+  TextEditingController doubleController = new TextEditingController();
+  TextEditingController boolController = new TextEditingController();
 
   MyApp({Key key, this.dbData}) : super(key: key);
 
