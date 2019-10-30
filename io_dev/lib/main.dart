@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -19,6 +20,8 @@ Future<DbData> fetchData() async {
   }
 }
 
+int rowIndex = 0;
+
 class DbData {
   final String title;
   final double length;
@@ -28,9 +31,9 @@ class DbData {
 
   factory DbData.fromJson(List<dynamic> json) {
     return DbData(
-      title: json[7]['title'],
-      length: json[7]['length'],
-      isTrue: json[7]['isTrue'],
+      title: json[rowIndex]['title'],
+      length: json[rowIndex]['length'],
+      isTrue: json[rowIndex]['isTrue'],
     );
   }
 }
@@ -137,30 +140,34 @@ class MyApp extends StatelessWidget {
                       // },
                       //
                     ),
-                    Row(children: <Widget>[
-                      Padding(padding: EdgeInsets.fromLTRB(240, 0, 0, 0)),
-                      RaisedButton(
-                          onPressed: () async {
-                            await _submit();
-                          },
-                          child: Text('Save to Database'))
-                    ]),
+                    Padding(padding: EdgeInsets.all(5)),
+                    RaisedButton(
+                        color: Colors.pink,
+                        onPressed: () async {
+                          await _submit();
+                        },
+                        child: Text('Save to Database', style: TextStyle(color: Colors.white))),
                     Padding(padding: EdgeInsets.all(10)),
                     RaisedButton(
-                      color: Colors.lightGreen,
-                      child: Text(snapshot.data.title),
-                      onPressed: () {},
+                      color: Colors.white,
+                      child: Text(snapshot.data.title,
+                          style: TextStyle(color: Colors.pink)),
+                      onPressed: () {
+                        changeRowIndex();
+                        main();
+                      },
                     ),
                     Container(
                         padding: EdgeInsets.fromLTRB(42, 10, 42, 10),
-                        color: Colors.pink,
-                        child: Text(snapshot.data.length.toString())),
+                        //color: Colors.pink,
+                        child: Text(snapshot.data.length.toString(),
+                            style: TextStyle(color: Colors.pink))),
                     Container(
-                        padding: EdgeInsets.fromLTRB(43, 10, 43, 10),
-                        color: Colors.deepPurple,
+                        padding: EdgeInsets.fromLTRB(42, 10, 42, 10),
+                        //color: Colors.deepPurple,
                         child: Text(
                           snapshot.data.isTrue.toString(),
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.pink),
                         )),
                   ],
                 );
@@ -190,5 +197,13 @@ class MyApp extends StatelessWidget {
         isTrue: boolController.text.toLowerCase() == 'true');
     await insertData(newRow);
     // }
+  }
+}
+
+changeRowIndex() {
+  if (rowIndex <= 9) {
+    rowIndex++;
+  } else {
+    rowIndex = 0;
   }
 }
