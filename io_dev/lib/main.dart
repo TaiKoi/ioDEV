@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/basic.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
+import 'package:toast/toast.dart';
 
 Future<DbData> fetchData() async {
   final response =
@@ -21,6 +22,8 @@ Future<DbData> fetchData() async {
 }
 
 int rowIndex = 0;
+int dbLength = 0;
+//DbData dbDatas = []
 
 class DbData {
   final String title;
@@ -30,6 +33,7 @@ class DbData {
   DbData({this.title, this.length, this.isTrue});
 
   factory DbData.fromJson(List<dynamic> json) {
+    dbLength = json.length;
     return DbData(
       title: json[rowIndex]['title'],
       length: json[rowIndex]['length'],
@@ -145,8 +149,12 @@ class MyApp extends StatelessWidget {
                         color: Colors.pink,
                         onPressed: () async {
                           await _submit();
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          Toast.show("Inserted into DB", context,
+                              duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
                         },
-                        child: Text('Save to Database', style: TextStyle(color: Colors.white))),
+                        child: Text('Save to Database',
+                            style: TextStyle(color: Colors.white))),
                     Padding(padding: EdgeInsets.all(10)),
                     RaisedButton(
                       color: Colors.white,
@@ -201,7 +209,7 @@ class MyApp extends StatelessWidget {
 }
 
 changeRowIndex() {
-  if (rowIndex <= 9) {
+  if (rowIndex < dbLength - 1) {
     rowIndex++;
   } else {
     rowIndex = 0;
